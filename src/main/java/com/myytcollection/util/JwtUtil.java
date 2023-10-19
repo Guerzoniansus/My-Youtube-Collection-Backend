@@ -18,7 +18,6 @@ public class JwtUtil {
 
     public String generateJwt(String email) {
         Date now = new Date();
-        System.out.println("Using key: " + key);
 
         return Jwts.builder()
                 .setSubject(email)
