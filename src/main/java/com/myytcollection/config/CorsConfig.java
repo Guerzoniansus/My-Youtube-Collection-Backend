@@ -1,4 +1,4 @@
-package com.myytcollection;
+package com.myytcollection.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
