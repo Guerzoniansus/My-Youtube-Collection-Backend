@@ -12,11 +12,11 @@ import java.security.GeneralSecurityException;
 public class LoginService {
 
     /**
-     * Checks if the ID token is valid. If so, it returns
-     * a JWT token with the user' s email and registers the user in
-     * the database if it's a new user. If the ID token is not valid it returns null.
-     * @param googleIdToken The token from the frontend to authenticate
-     * @return A JWT token used for authentication
+     * Generates a JWT token used for authentication, and registers the user in the database if needed
+     * @param googleIdToken
+     * @param verifier
+     * @param jwtUtil
+     * @return A JWT if a valid google Id token was given, otherwise null.
      */
     public String login(String googleIdToken, GoogleIdTokenVerifier verifier, JwtUtil jwtUtil) {
         String email = verifyGoogleIdToken(googleIdToken, verifier);
@@ -28,11 +28,6 @@ public class LoginService {
         return jwtUtil.generateJwt(email);
     }
 
-    /**
-     * Checks if the google ID token is valid and returns the user's email if true.
-     * @param googleIdToken The google ID token.
-     * @return The user's s email or null.
-     */
     private String verifyGoogleIdToken(String googleIdToken, GoogleIdTokenVerifier verifier) {
         GoogleIdToken idToken = null;
 
