@@ -3,6 +3,7 @@ package com.myytcollection.controller;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.myytcollection.repository.UserRepository;
 import com.myytcollection.service.LoginService;
 import com.myytcollection.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,11 +18,14 @@ public class LoginController {
     private final String googleClientId;
     private final LoginService loginService;
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public LoginController(LoginService loginService, JwtUtil jwtUtil, @Value("${googleClientId}") String googleClientId) {
+    public LoginController(LoginService loginService, JwtUtil jwtUtil, @Value("${googleClientId}") String googleClientId,
+                           UserRepository userRepository) {
         this.loginService = loginService;
         this.jwtUtil = jwtUtil;
         this.googleClientId = googleClientId;
+        this.userRepository = userRepository;
     }
 
     @RequestMapping(path = "/login", method = RequestMethod.POST)
@@ -33,7 +37,7 @@ public class LoginController {
                 //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
                 .build();
 
-        String response = loginService.login(idToken, verifier, jwtUtil);
+        String response = loginService.login(idToken, verifier, jwtUtil, userRepository);
 
         return response != null ?
                 ResponseEntity.ok(response) :
