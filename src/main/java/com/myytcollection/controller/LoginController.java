@@ -1,8 +1,9 @@
-package com.myytcollection.authentication;
+package com.myytcollection.controller;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.myytcollection.service.LoginService;
 import com.myytcollection.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -11,13 +12,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 
 @RestController
-public class AuthenticationController {
+public class LoginController {
 
     private final String googleClientId;
     private final LoginService loginService;
     private final JwtUtil jwtUtil;
 
-    public AuthenticationController(LoginService loginService, JwtUtil jwtUtil, @Value("${googleClientId}") String googleClientId) {
+    public LoginController(LoginService loginService, JwtUtil jwtUtil, @Value("${googleClientId}") String googleClientId) {
         this.loginService = loginService;
         this.jwtUtil = jwtUtil;
         this.googleClientId = googleClientId;

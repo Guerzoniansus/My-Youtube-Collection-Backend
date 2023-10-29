@@ -1,8 +1,9 @@
-package com.myytcollection.authentication;
+package com.myytcollection.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.myytcollection.service.LoginService;
 import com.myytcollection.util.JwtUtil;
 import org.junit.*;
 import org.junit.runner.RunWith;
