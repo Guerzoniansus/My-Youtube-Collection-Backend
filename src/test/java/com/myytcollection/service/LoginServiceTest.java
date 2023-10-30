@@ -10,10 +10,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -68,6 +66,14 @@ public class LoginServiceTest {
         loginService.login("validToken", verifier, jwtUtil, userRepository);
 
         verify(userRepository).save(any());
+    }
 
+    @Test
+    public void testLoginWithNullEmailDoesNotSaveUserToDatabase() throws GeneralSecurityException, IOException {
+        when(verifier.verify(anyString())).thenReturn(null);
+
+        loginService.login("invalidToken", verifier, jwtUtil, userRepository);
+
+        verifyNoInteractions(userRepository);
     }
 }

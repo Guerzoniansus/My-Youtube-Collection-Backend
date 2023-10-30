@@ -14,12 +14,12 @@ import java.security.GeneralSecurityException;
 public class LoginService {
 
     /**
-     * Generates a JWT token used for authentication, and registers the user in the database if needed
-     * @param googleIdToken The google id token received from the frontend
-     * @param verifier Used to verify the google id token
-     * @param jwtUtil Used for creating the jwt token
-     * @param userRepository Used for saving the user to the database
-     * @return A JWT if a valid google Id token was given, otherwise null.
+     * Generates a JWT token used for authentication, and registers the user in the database if needed.
+     * @param googleIdToken The google id token received from the frontend.
+     * @param verifier Used to verify the google id token.
+     * @param jwtUtil Used for creating the jwt token.
+     * @param userRepository Used for saving the user to the database.
+     * @return A JWT with the user's email if a valid google Id token was given, otherwise null.
      */
     public String login(String googleIdToken, GoogleIdTokenVerifier verifier, JwtUtil jwtUtil, UserRepository userRepository) {
         String email = verifyGoogleIdToken(googleIdToken, verifier);
