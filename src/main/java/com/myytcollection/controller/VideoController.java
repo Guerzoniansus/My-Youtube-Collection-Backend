@@ -23,6 +23,12 @@ public class VideoController extends Controller {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Handles the creation of a new video in the database.
+     * @param authorizationHeader The authorization header in the HTTP request,
+     * @param video The video to save in the database.
+     * @return Returns either nothing, or an error if something went wrong.
+     */
     @RequestMapping(path = "/videos", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<?> createVideo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody VideoDTO video) {

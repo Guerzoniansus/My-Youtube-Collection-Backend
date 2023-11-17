@@ -29,6 +29,12 @@ public class TagController extends Controller {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Handles the creation of new tags in the database.
+     * @param authorizationHeader The authorization header in the HTTP request,
+     * @param tags The tags to save in the database.
+     * @return The newly created tags, or an error if something went wrong.
+     */
     @RequestMapping(path = "/tags", method = RequestMethod.POST)
     public ResponseEntity<?> saveTags(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Set<TagDTO> tags) {
         try {
@@ -51,10 +57,8 @@ public class TagController extends Controller {
             final String email = getEmail(authorizationHeader, jwtUtil);
             User user = userRepository.findById(email).get();
 
-            System.out.println("Getting all tags!");
             Set<TagDTO> tags = tagService.getAllTagsAsDTOs(user);
 
-            System.out.println("Returning " + tags);
             return ResponseEntity.ok(tags);
         }
 

@@ -24,6 +24,11 @@ public class VideoMapper {
         this.tagMapper = tagMapper;
     }
 
+    /**
+     * Retrieves a video from the database.
+     * @param dto The video whose ID will be used for database retrieval.
+     * @return The found video,
+     */
     public Video fromDatabase(VideoDTO dto) {
         return videoRepository.getReferenceById(dto.getVideoID());
     }
@@ -41,6 +46,11 @@ public class VideoMapper {
                 dto.getChannel(), dto.getAlternativeTitle(), Calendar.getInstance().getTime(), user, tags);
     }
 
+    /**
+     * Converts a video model to a video DTO. Includes converting all tags.
+     * @param video The video to convert.
+     * @return The converted video DTO.
+     */
     public VideoDTO toDTO(Video video) {
         Set<TagDTO> tags = video.getTags().stream().map(tagMapper::toDTO).collect(Collectors.toSet());
 

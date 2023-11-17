@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * This class is used for managing tags.
+ */
 @Service
 public class TagService {
     private final TagRepository tagRepository;
@@ -21,6 +24,11 @@ public class TagService {
         this.mapper = mapper;
     }
 
+    /**
+     * Save a tag to the database.
+     * @param tag The tag to save.
+     * @return The newly created tag.
+     */
     public Tag saveTag(Tag tag) {
         return tagRepository.save(tag);
     }
