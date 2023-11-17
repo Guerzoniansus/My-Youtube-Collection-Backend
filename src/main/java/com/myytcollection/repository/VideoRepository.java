@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 public interface VideoRepository extends JpaRepository<Video, Integer> {
-    Set<Video> findByUserEmail(String userEmail);
+    Set<Video> findByUserOrderByDateCreatedDesc(User user);
     Set<Video> findByUserAndTitleContainingAndTagsIn(User user, String title, Set<Tag> tags);
 }

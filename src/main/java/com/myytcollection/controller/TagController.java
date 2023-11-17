@@ -31,7 +31,7 @@ public class TagController extends Controller {
 
     /**
      * Handles the creation of new tags in the database.
-     * @param authorizationHeader The authorization header in the HTTP request,
+     * @param authorizationHeader The authorization header in the HTTP request.
      * @param tags The tags to save in the database.
      * @return The newly created tags, or an error if something went wrong.
      */
@@ -51,6 +51,11 @@ public class TagController extends Controller {
         }
     }
 
+    /**
+     * Gets all tags from the user.
+     * @param authorizationHeader The authorization header in the HTTP request.
+     * @return All tags from the user.
+     */
     @RequestMapping(path = "/tags", method = RequestMethod.GET)
     public ResponseEntity<?> getTags(@RequestHeader("Authorization") String authorizationHeader) {
         try {

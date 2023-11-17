@@ -5,12 +5,9 @@ import com.myytcollection.dto.VideoDTO;
 import com.myytcollection.model.Tag;
 import com.myytcollection.model.User;
 import com.myytcollection.model.Video;
-import com.myytcollection.repository.TagRepository;
 import com.myytcollection.repository.VideoRepository;
 import org.springframework.stereotype.Component;
-
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 

@@ -4,9 +4,12 @@ import com.myytcollection.dto.VideoDTO;
 import com.myytcollection.mapper.VideoMapper;
 import com.myytcollection.model.User;
 import com.myytcollection.model.Video;
-import com.myytcollection.repository.UserRepository;
 import com.myytcollection.repository.VideoRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class is used for managing videos.
@@ -15,11 +18,11 @@ import org.springframework.stereotype.Service;
 public class VideoService {
 
     private final VideoRepository videoRepository;
-    private final VideoMapper videoMapper;
+    private final VideoMapper mapper;
 
     public VideoService(VideoRepository videoRepository, VideoMapper videoMapper) {
         this.videoRepository = videoRepository;
-        this.videoMapper = videoMapper;
+        this.mapper = videoMapper;
     }
 
     /**
@@ -28,8 +31,12 @@ public class VideoService {
      * @param videoDTO The video to save.
      */
     public void createVideo(User user, VideoDTO videoDTO) {
-        Video video = videoMapper.toModel(videoDTO, user);
+        Video video = mapper.toModel(videoDTO, user);
         saveVideo(video);
+    }
+
+    public Set<Video> getVideos(User user) {
+        return videoRepository.findByUserOrderByDateCreatedDesc(user);
     }
 
     /**
@@ -38,5 +45,24 @@ public class VideoService {
      */
     public void saveVideo(Video video) {
         videoRepository.save(video);
+    }
+
+    /**
+     * Returns all videos of a user, or an empty list if the user has no videos.
+     * @param user The user whose videos to get.
+     * @return All videos of a user, or an empty list if the user has no videos, converted to VideoDTOs.
+     */
+    public Set<VideoDTO> getAllVideosAsDTOs(User user) {
+        // Using LinkedHashSet to keep the order sorted by date
+        return getAllVideos(user).stream().map(mapper::toDTO).collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /**
+     * Returns all videos of a user, or an empty list if the user has no videos.
+     * @param user The user whose videos to get.
+     * @return All videos of a user, or an empty list if the user has no videos.
+     */
+    public Set<Video> getAllVideos(User user) {
+        return videoRepository.findByUserOrderByDateCreatedDesc(user);
     }
 }

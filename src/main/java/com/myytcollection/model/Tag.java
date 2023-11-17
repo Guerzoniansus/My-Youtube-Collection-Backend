@@ -27,7 +27,6 @@ public class Tag {
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
-                    CascadeType.PERSIST,
                     CascadeType.MERGE
             },
             mappedBy = "tags")
@@ -52,11 +51,11 @@ public class Tag {
 
     @Override
     public String toString() {
+        // Videos do not get printed because that would cause an infinite loop stackoverflow exception
         return "Tag{" +
                 "tagID=" + tagID +
                 ", text='" + text + '\'' +
                 ", user=" + user +
-                ", videos=" + videos +
                 '}';
     }
 
