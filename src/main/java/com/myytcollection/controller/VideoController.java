@@ -1,5 +1,6 @@
 package com.myytcollection.controller;
 
+import com.myytcollection.dto.VideoDTO;
 import com.myytcollection.model.User;
 import com.myytcollection.model.Video;
 import com.myytcollection.repository.UserRepository;
@@ -14,24 +15,22 @@ public class VideoController extends Controller {
 
     private final JwtUtil jwtUtil;
     private final VideoService videoService;
+    private final UserRepository userRepository;
 
-    public VideoController(JwtUtil jwtUtil, VideoService videoService) {
+    public VideoController(JwtUtil jwtUtil, VideoService videoService, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.videoService = videoService;
+        this.userRepository = userRepository;
     }
 
     @RequestMapping(path = "/videos", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> saveVideo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Video video) {
-        System.out.println("Incoming save video");
-
+    public ResponseEntity<?> createVideo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody VideoDTO video) {
         try {
             final String email = getEmail(authorizationHeader, jwtUtil);
+            User user = userRepository.findById(email).get();
 
-            System.out.println(email);
-            System.out.println("Video from VideoController: " + video);
-
-            videoService.saveVideo(email, video);
+            videoService.createVideo(user, video);
 
             return ResponseEntity.ok().build();
         }

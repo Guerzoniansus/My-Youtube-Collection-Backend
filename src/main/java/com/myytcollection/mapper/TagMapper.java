@@ -3,19 +3,28 @@ package com.myytcollection.mapper;
 import com.myytcollection.dto.TagDTO;
 import com.myytcollection.model.Tag;
 import com.myytcollection.model.User;
+import com.myytcollection.repository.TagRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TagMapper implements DataMapper<Tag, TagDTO> {
+public class TagMapper {
 
-    @Override
-    public Tag toModel(TagDTO dto) {
-        return new Tag(dto.getTagID(), dto.getText(), null);
+    private final TagRepository tagRepository;
+
+    public TagMapper(TagRepository tagRepository) {
+        this.tagRepository = tagRepository;
     }
 
-    @Override
-    public TagDTO toDTO(Tag model) {
-        return new TagDTO(model.getTagID(), model.getText());
+    public Tag fromDatabase(TagDTO dto) {
+        return tagRepository.getReferenceById(dto.getTagID());
+    }
+
+    public Tag toModel(TagDTO dto, User user) {
+        return new Tag(dto.getTagID(), dto.getText(), user);
+    }
+
+    public TagDTO toDTO(Tag tag) {
+        return new TagDTO(tag.getTagID(), tag.getText());
     }
 }
 

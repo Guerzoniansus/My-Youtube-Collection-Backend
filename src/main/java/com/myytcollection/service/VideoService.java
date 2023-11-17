@@ -1,5 +1,7 @@
 package com.myytcollection.service;
 
+import com.myytcollection.dto.VideoDTO;
+import com.myytcollection.mapper.VideoMapper;
 import com.myytcollection.model.User;
 import com.myytcollection.model.Video;
 import com.myytcollection.repository.UserRepository;
@@ -9,22 +11,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class VideoService {
 
-    private final UserRepository userRepository;
     private final VideoRepository videoRepository;
+    private final VideoMapper videoMapper;
 
-    public VideoService(UserRepository userRepository, VideoRepository videoRepository) {
-        this.userRepository = userRepository;
+    public VideoService(VideoRepository videoRepository, VideoMapper videoMapper) {
         this.videoRepository = videoRepository;
+        this.videoMapper = videoMapper;
     }
 
-    public void saveVideo(String email, Video video) {
-        User user = userRepository.findById(email).orElseThrow(() -> new RuntimeException("User not found for email: " + email));
-        // That runtime exception does not get thrown
+    public void createVideo(User user, VideoDTO videoDTO) {
+        Video video = videoMapper.toModel(videoDTO, user);
+        saveVideo(user, video);
+    }
 
-        video.setUser(user);
-        System.out.println("User: " + video.getUser());
-        System.out.println("Video from VideoService: " + video);
-
+    public void saveVideo(User user, Video video) {
         videoRepository.save(video);
     }
 }

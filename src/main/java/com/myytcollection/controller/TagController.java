@@ -21,7 +21,6 @@ public class TagController extends Controller {
 
     private final JwtUtil jwtUtil;
     private final TagService tagService;
-
     private final UserRepository userRepository;
 
     public TagController(JwtUtil jwtUtil, TagService tagService, UserRepository userRepository) {
@@ -35,9 +34,6 @@ public class TagController extends Controller {
         try {
             String email = getEmail(authorizationHeader, jwtUtil);
             User user = userRepository.findById(email).get();
-
-            System.out.println("Incoming save tags");
-            tags.forEach(System.out::println);
 
             Set<Tag> createdTags = tagService.createTags(user, tags);
 
