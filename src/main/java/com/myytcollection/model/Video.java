@@ -60,7 +60,6 @@ public class Video {
         this.alternativeTitle = alternativeTitle;
         this.dateCreated = dateCreated;
         this.user = user;
-        this.tags = new HashSet<>();
     }
 
     public Video() {}
