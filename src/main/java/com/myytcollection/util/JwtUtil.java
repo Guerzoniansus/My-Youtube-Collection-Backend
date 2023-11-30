@@ -1,34 +1,51 @@
 package com.myytcollection.util;
 
-import com.google.api.client.util.Value;
+import org.springframework.beans.factory.annotation.Value;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+/**
+ * Class used for JWT (Javascript WebToken) utilities.
+ */
+@Component
 public class JwtUtil {
 
-    private final String KEY;
+    private final String key;
 
-    public JwtUtil(String jwtSecretKey) {
-        this.KEY = jwtSecretKey;
+    /**
+     * Class used for JWT (Javascript WebToken) utilities.
+     * @param key A secret key used for generating JWTs.
+     */
+    public JwtUtil(@Value("${jwtSecretKey}") String key){
+        this.key = key;
     }
 
+    /**
+     * Generate a JWT based on a user's email.
+     * @param email The email to include in the JWT.
+     * @return A JWT token that can be used in the frontend for authentication.
+     */
     public String generateJwt(String email) {
         Date now = new Date();
 
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(now)
-                .signWith(SignatureAlgorithm.HS512, KEY)
+                .signWith(SignatureAlgorithm.HS512, key)
                 .compact();
     }
 
+    /**
+     * Extracts the email from a JWT token.
+     * @param jwt The JWT to extract the email from.
+     * @return The user's email.
+     */
     public String extractEmailFromJwt(String jwt) {
         return Jwts.parser()
-                .setSigningKey(KEY)
+                .setSigningKey(key)
                 .parseClaimsJws(jwt)
                 .getBody()
                 .getSubject();
