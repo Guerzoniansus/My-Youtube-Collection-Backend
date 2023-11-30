@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -55,7 +56,9 @@ public class VideoController extends Controller {
      * @return All videos from the user.
      */
     @RequestMapping(path = "/videos", method = RequestMethod.GET)
-    public ResponseEntity<?> getVideos(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> getVideos(@RequestHeader("Authorization") String authorizationHeader,
+                                       @RequestParam(required = false) String q,
+                                       @RequestParam(required = false) List<TagDTO> tags) {
         try {
             final String email = getEmail(authorizationHeader, jwtUtil);
             User user = userRepository.findById(email).get();
