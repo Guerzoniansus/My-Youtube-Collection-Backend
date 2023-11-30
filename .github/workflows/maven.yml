@@ -15,7 +15,8 @@ on:
     branches: [ "main", "develop", "*" ]
 
 jobs:
-  build:
+  build-prod:
+    if: github.ref == 'refs/heads/main'
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -29,12 +30,12 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml -Pprod
     - name: Archive production artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
        name: my-yt-collection-backend
-       path: ./target/my-yt-collection-backend.jar
-      if: github.ref == 'refs/heads/main'
+       path: ./target/*.jar
   build-dev:
+    if: github.ref == 'refs/heads/develop'
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -48,11 +49,10 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml -Pdev
     - name: Archive production artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
        name: my-yt-collection-backend
-       path: ./target/my-yt-collection-backend.jar
-      if: github.ref == 'refs/heads/main'
+       path: ./target/*.jar
   test:
     runs-on: ubuntu-latest
     steps:
