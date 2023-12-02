@@ -10,10 +10,12 @@ import com.myytcollection.model.Video;
 import com.myytcollection.model.Tag;
 import com.myytcollection.repository.VideoRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -65,10 +67,16 @@ public class VideoService {
         }
 
         SearchFilter searchFilter = searchFilterMapper.toModel(searchFilterDTO);
-
         Page<Video> videos = getVideos(user, searchFilter);
-        Page<VideoDTO> videoDTOs = videos.map(videoMapper::toDTO);
-        return videoDTOs;
+
+        if (videos == null) {
+            return new PageImpl<>(new ArrayList<>());
+        }
+
+        else {
+            Page<VideoDTO> videoDTOs = videos.map(videoMapper::toDTO);
+            return videoDTOs;
+        }
     }
 
     /**
