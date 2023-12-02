@@ -54,6 +54,7 @@ jobs:
        name: my-yt-collection-backend
        path: ./target/*.jar
   test:
+    if: startsWith(github.ref, 'refs/heads/')
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
