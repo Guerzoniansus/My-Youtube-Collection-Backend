@@ -74,7 +74,7 @@ public class VideoController extends Controller {
 
             Page<VideoDTO> page = videoService.getVideos(user, searchFilter);
             List<VideoDTO> videos = page.getContent();
-            int totalVideos = page.getNumberOfElements();
+            int totalVideos = (int) page.getTotalElements();
 
             VideoResponseDTO response = new VideoResponseDTO(videos, totalVideos);
 
@@ -82,7 +82,7 @@ public class VideoController extends Controller {
         }
 
         catch (IllegalArgumentException e) {
-            System.out.println("Error in POST getVideos().");
+            System.out.println("Error in VideoController POST getVideos().");
             System.out.println("Auth header: " + authorizationHeader);
             System.out.println("Search filter DTO: " + searchFilter);
             System.out.println("Error:");

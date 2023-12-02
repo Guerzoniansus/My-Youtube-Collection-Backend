@@ -3,17 +3,12 @@ package com.myytcollection.controller;
 import com.myytcollection.dto.TagDTO;
 import com.myytcollection.model.Tag;
 import com.myytcollection.model.User;
-import com.myytcollection.model.Video;
 import com.myytcollection.repository.UserRepository;
 import com.myytcollection.service.TagService;
 import com.myytcollection.util.JwtUtil;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -36,12 +31,17 @@ public class TagController extends Controller {
      * @return The newly created tags, or an error if something went wrong.
      */
     @RequestMapping(path = "/tags", method = RequestMethod.POST)
-    public ResponseEntity<?> saveTags(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Set<TagDTO> tags) {
+    public ResponseEntity<?> createTags(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Set<TagDTO> tags) {
         try {
             String email = getEmail(authorizationHeader, jwtUtil);
             User user = userRepository.findById(email).get();
 
+            System.out.println("dtos: ");
+            System.out.println(tags);
+
             Set<Tag> createdTags = tagService.createTags(user, tags);
+            System.out.println("created tags: ");
+            System.out.println(createdTags);
 
             return ResponseEntity.ok(createdTags);
         }

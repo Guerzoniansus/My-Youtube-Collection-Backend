@@ -1,39 +1,25 @@
 package com.myytcollection.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myytcollection.dto.SearchFilterDTO;
 import com.myytcollection.dto.VideoDTO;
 import com.myytcollection.dto.VideoResponseDTO;
 import com.myytcollection.model.User;
-import com.myytcollection.model.Video;
 import com.myytcollection.repository.UserRepository;
-import com.myytcollection.repository.VideoRepository;
 import com.myytcollection.service.VideoService;
 import com.myytcollection.util.JwtUtil;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
-import static org.hamcrest.Matchers.any;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class VideoControllerTest {
 
