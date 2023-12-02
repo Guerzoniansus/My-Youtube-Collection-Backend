@@ -1,8 +1,11 @@
 package com.myytcollection.service;
 
+import com.myytcollection.dto.SearchFilterDTO;
 import com.myytcollection.dto.VideoDTO;
+import com.myytcollection.mapper.SearchFilterMapper;
 import com.myytcollection.mapper.TagMapper;
 import com.myytcollection.mapper.VideoMapper;
+import com.myytcollection.model.SearchFilter;
 import com.myytcollection.model.User;
 import com.myytcollection.model.Video;
 import com.myytcollection.repository.TagRepository;
@@ -11,12 +14,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
-import java.util.Calendar;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,16 +36,17 @@ public class VideoServiceTest {
     private VideoRepository videoRepository;
     @Mock
     private TagRepository tagRepository;
-
-    private VideoMapper mapper;
-
+    private VideoMapper videoMapper;
+    private SearchFilterMapper searchFilterMapper;
     private VideoService videoService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        mapper = new VideoMapper(videoRepository, new TagMapper(tagRepository));
-        videoService = new VideoService(videoRepository, mapper);
+        TagMapper tagMapper = new TagMapper(tagRepository);
+        videoMapper = new VideoMapper(videoRepository, new TagMapper(tagRepository));
+        searchFilterMapper = new SearchFilterMapper(tagMapper);
+        videoService = new VideoService(videoRepository, videoMapper, searchFilterMapper);
     }
 
     @Test
@@ -51,24 +61,9 @@ public class VideoServiceTest {
     }
 
     @Test
-    public void testGetVideos_Success() {
-        User user = new User("test@example.com");
-        Video video = new Video(1, "videoCode", "title", "channel", "alternativeTitle", Calendar.getInstance().getTime(), user, new HashSet<>());
-
-        Set<Video> videos = new HashSet<>();
-        videos.add(video);
-
-        when(videoRepository.findByUserOrderByDateCreatedDesc(user)).thenReturn(videos);
-
-        Set<Video> retrievedVideos = videoService.getVideos(user);
-
-        assertEquals(1, retrievedVideos.size());
-        assertEquals(video.getVideoID(), retrievedVideos.iterator().next().getVideoID());
-    }
-
-    @Test
     public void testSaveVideo_Success() {
-        Video video = new Video(1, "videoCode", "title", "channel", "alternativeTitle", Calendar.getInstance().getTime(), new User("test@example.com"), new HashSet<>());
+        User user = new User("test@example.com");
+        Video video = new Video(1, "videoCode", "title", "channel", "alternativeTitle", null, user, new HashSet<>());
 
         when(videoRepository.save(video)).thenReturn(video);
 
@@ -79,34 +74,30 @@ public class VideoServiceTest {
     }
 
     @Test
-    public void testGetAllVideosAsDTOs_Success() {
+    public void testGetVideos_Success() {
         User user = new User("test@example.com");
-        Video video = new Video(1, "videoCode", "title", "channel", "alternativeTitle", Calendar.getInstance().getTime(), user, new HashSet<>());
+        Video video = new Video(1, "videoCode", "title", "channel", "alternativeTitle", null, user, new HashSet<>());
 
         Set<Video> videos = new HashSet<>();
         videos.add(video);
 
-        when(videoRepository.findByUserOrderByDateCreatedDesc(user)).thenReturn(videos);
+        SearchFilterDTO searchFilterDTO = new SearchFilterDTO("query", null, 0, 10);
+        SearchFilter searchFilter = searchFilterMapper.toModel(searchFilterDTO);
+        Pageable pageable = PageRequest.of(searchFilter.getPageNumber(), searchFilter.getPageSize());
 
-        Set<VideoDTO> videoDTOs = videoService.getAllVideosAsDTOs(user);
+        when(videoRepository.getVideos(user, searchFilter.getQuery(), null, pageable)).thenReturn(new PageImpl<>(videos.stream().toList()));
 
-        assertEquals(1, videoDTOs.size());
-        assertEquals(video.getVideoID(), videoDTOs.iterator().next().getVideoID());
+        Page<VideoDTO> videoDTOs = videoService.getVideos(user, searchFilterDTO);
+
+        assertEquals(1, videoDTOs.getContent().size());
+        assertEquals(video.getVideoID(), videoDTOs.getContent().iterator().next().getVideoID());
     }
 
     @Test
-    public void testGetAllVideos_Success() {
+    public void testGetVideos_WithNullSearchFilterDTO() {
         User user = new User("test@example.com");
-        Video video = new Video(1, "videoCode", "title", "channel", "alternativeTitle", Calendar.getInstance().getTime(), user, new HashSet<>());
-
-        Set<Video> videos = new HashSet<>();
-        videos.add(video);
-
-        when(videoRepository.findByUserOrderByDateCreatedDesc(user)).thenReturn(videos);
-
-        Set<Video> retrievedVideos = videoService.getAllVideos(user);
-
-        assertEquals(1, retrievedVideos.size());
-        assertEquals(video.getVideoID(), retrievedVideos.iterator().next().getVideoID());
+        assertThrows(IllegalArgumentException.class, () -> {
+            videoService.getVideos(user, null);
+        });
     }
 }

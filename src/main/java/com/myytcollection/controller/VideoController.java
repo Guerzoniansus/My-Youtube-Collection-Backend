@@ -1,16 +1,20 @@
 package com.myytcollection.controller;
 
+import com.myytcollection.dto.SearchFilterDTO;
 import com.myytcollection.dto.TagDTO;
 import com.myytcollection.dto.VideoDTO;
+import com.myytcollection.dto.VideoResponseDTO;
 import com.myytcollection.model.User;
 import com.myytcollection.model.Video;
 import com.myytcollection.repository.UserRepository;
 import com.myytcollection.service.VideoService;
 import com.myytcollection.util.JwtUtil;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +37,7 @@ public class VideoController extends Controller {
      * @param video The video to save in the database.
      * @return Returns either nothing, or an error if something went wrong.
      */
-    @RequestMapping(path = "/videos", method = RequestMethod.POST)
+    @RequestMapping(path = "/videos/create", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<?> createVideo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody VideoDTO video) {
         try {
@@ -46,30 +50,45 @@ public class VideoController extends Controller {
         }
 
         catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Something was wrong with the authorization");
+            System.out.println("Error in POST getVideos().");
+            System.out.println("Auth header: " + authorizationHeader);
+            System.out.println("VideoDTO: " + video);
+            System.out.println("Error:");
+            System.out.println(e.getMessage());
+            System.out.println(Arrays.toString(e.getStackTrace()));
+            return ResponseEntity.badRequest().body("Something went wrong");
         }
     }
 
     /**
-     * Gets all videos from the user.
+     * Gets videos from the user.
      * @param authorizationHeader The authorization header in the HTTP request.
-     * @return All videos from the user.
+     * @param searchFilter The filter used for searching.
+     * @return Videos from the user, or an error if something went wrong.
      */
-    @RequestMapping(path = "/videos", method = RequestMethod.GET)
-    public ResponseEntity<?> getVideos(@RequestHeader("Authorization") String authorizationHeader,
-                                       @RequestParam(required = false) String q,
-                                       @RequestParam(required = false) List<TagDTO> tags) {
+    @RequestMapping(path = "/videos", method = RequestMethod.POST)
+    public ResponseEntity<?> getVideos(@RequestHeader("Authorization") String authorizationHeader, @RequestBody SearchFilterDTO searchFilter) {
         try {
             final String email = getEmail(authorizationHeader, jwtUtil);
             User user = userRepository.findById(email).get();
 
-            Set<VideoDTO> videos = videoService.getAllVideosAsDTOs(user);
+            Page<VideoDTO> page = videoService.getVideos(user, searchFilter);
+            List<VideoDTO> videos = page.getContent();
+            int totalVideos = page.getNumberOfElements();
 
-            return ResponseEntity.ok(videos);
+            VideoResponseDTO response = new VideoResponseDTO(videos, totalVideos);
+
+            return ResponseEntity.ok(response);
         }
 
         catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Something was wrong with the authorization");
+            System.out.println("Error in POST getVideos().");
+            System.out.println("Auth header: " + authorizationHeader);
+            System.out.println("Search filter DTO: " + searchFilter);
+            System.out.println("Error:");
+            System.out.println(e.getMessage());
+            System.out.println(Arrays.toString(e.getStackTrace()));
+            return ResponseEntity.badRequest().body("Something went wrong");
         }
     }
 

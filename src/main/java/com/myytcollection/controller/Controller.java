@@ -18,12 +18,12 @@ public abstract class Controller {
             jwt = authorizationHeader.substring(7); // To remove "Bearer " and extract the token
         }
 
-        else throw new IllegalArgumentException("Something was wrong with the authorization header");
+        else throw new IllegalArgumentException("Something was wrong with the authorization header.");
 
         try {
             return jwtUtil.extractEmailFromJwt(jwt);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Could not extract the email from the JWT token");
+            throw new IllegalArgumentException("Could not identify the user's email.");
         }
     }
 }
