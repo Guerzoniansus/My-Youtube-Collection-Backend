@@ -32,7 +32,10 @@ public interface VideoRepository extends JpaRepository<Video, Integer> {
             "WHERE (:user IS NULL OR v.user = :user) " +
             "AND (:tagIds IS NULL " +
             "OR NOT EXISTS (SELECT t FROM Tag t WHERE t.tagID IN :tagIds AND NOT EXISTS (SELECT 1 FROM v.tags vt WHERE vt.tagID = t.tagID))) " +
-            "AND (:query IS NULL OR :query = '' OR LOWER(v.title) LIKE %:query% OR LOWER(v.alternativeTitle) LIKE %:query%) " +
+            "AND (:query IS NULL OR :query = '' " +
+            "OR LOWER(v.title) LIKE %:query% " +
+            "OR LOWER(v.alternativeTitle) LIKE %:query% " +
+            "OR LOWER(v.channel) LIKE %:query%)" +
             "ORDER BY v.dateCreated DESC")
     Page<Video> getVideos(@Param("user") User user,
                           @Param("query") String query,
