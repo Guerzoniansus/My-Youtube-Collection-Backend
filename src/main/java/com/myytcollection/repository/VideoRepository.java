@@ -19,7 +19,7 @@ public interface VideoRepository extends JpaRepository<Video, Integer> {
      * Gets the videos of a user. The query and tags are optional, if you use null as argument then they will be ignored.
      * A video only needs to match ONE of the titles AND the tags.
      * @param user The user to retrieve video's from.
-     * @param query Will be used for searching by title and alternative title. This is not case-insensitive.
+     * @param query Will be used for searching by title, alternative title and channel. This is case-insensitive.
      *              You can pass null or an empty string, in which case the query will simply be ignored.
      * @param tagIds The tags to search for. The video must include all of these tags.
      *               The query uses tagIds because regular tags don't work.
