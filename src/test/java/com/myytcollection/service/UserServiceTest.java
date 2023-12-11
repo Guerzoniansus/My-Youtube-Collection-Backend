@@ -6,34 +6,34 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.myytcollection.repository.UserRepository;
 import com.myytcollection.util.JwtUtil;
 import org.junit.*;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class LoginServiceTest {
+public class UserServiceTest {
 
-    @InjectMocks
-    private LoginService loginService;
-    @Mock
+    private UserService userService;
     private JwtUtil jwtUtil;
-    @Mock
-    private GoogleIdTokenVerifier verifier;
-
-    @Mock
     private UserRepository userRepository;
 
+    private GoogleIdTokenVerifier verifier;
+
+    @Before
+    public void setup() {
+        this.jwtUtil = mock(JwtUtil.class);
+        this.userRepository = mock(UserRepository.class);
+        this.verifier = mock(GoogleIdTokenVerifier.class);
+
+        this.userService = new UserService(jwtUtil, userRepository, "id");
+        this.userService.setVerifier(verifier);
+    }
 
     @Test
-    public void testLoginWithNullEmailReturnsNull() throws GeneralSecurityException, IOException {
+    public void testLogin_WithNullEmail_ReturnsNull() throws GeneralSecurityException, IOException {
         when(verifier.verify(anyString())).thenReturn(null);
 
-        String jwtToken = loginService.login("invalidToken", verifier, jwtUtil, userRepository);
+        String jwtToken = userService.login("invalidToken");
 
         assertNull(jwtToken);
     }
@@ -48,7 +48,7 @@ public class LoginServiceTest {
         when(payload.getEmail()).thenReturn("user@example.com");
         when(jwtUtil.generateJwt("user@example.com")).thenReturn("validToken");
 
-        String jwtToken = loginService.login("validToken", verifier, jwtUtil, userRepository);
+        String jwtToken = userService.login("validToken");
 
         assertEquals("validToken", jwtToken);
     }
@@ -63,7 +63,7 @@ public class LoginServiceTest {
         when(payload.getEmail()).thenReturn("user@example.com");
         when(jwtUtil.generateJwt("user@example.com")).thenReturn("validToken");
 
-        loginService.login("validToken", verifier, jwtUtil, userRepository);
+        userService.login("validToken");
 
         verify(userRepository).save(any());
     }
@@ -72,7 +72,7 @@ public class LoginServiceTest {
     public void testLoginWithNullEmailDoesNotSaveUserToDatabase() throws GeneralSecurityException, IOException {
         when(verifier.verify(anyString())).thenReturn(null);
 
-        loginService.login("invalidToken", verifier, jwtUtil, userRepository);
+        userService.login("invalidToken");
 
         verifyNoInteractions(userRepository);
     }

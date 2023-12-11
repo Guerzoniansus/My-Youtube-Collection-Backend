@@ -4,26 +4,22 @@ import com.myytcollection.dto.TagDTO;
 import com.myytcollection.model.Tag;
 import com.myytcollection.model.User;
 import com.myytcollection.repository.TagRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TagMapperTest {
 
+    @InjectMocks
+    private TagMapper tagMapper;
     @Mock
     private TagRepository tagRepository;
-
-    private TagMapper tagMapper;
-
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        tagMapper = new TagMapper(tagRepository);
-    }
 
     @Test
     public void testFromDatabase_Success() {

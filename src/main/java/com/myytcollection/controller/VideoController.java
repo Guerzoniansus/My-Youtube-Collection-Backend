@@ -1,12 +1,11 @@
 package com.myytcollection.controller;
 
 import com.myytcollection.dto.SearchFilterDTO;
-import com.myytcollection.dto.TagDTO;
 import com.myytcollection.dto.VideoDTO;
 import com.myytcollection.dto.VideoResponseDTO;
 import com.myytcollection.model.User;
-import com.myytcollection.model.Video;
 import com.myytcollection.repository.UserRepository;
+import com.myytcollection.service.UserService;
 import com.myytcollection.service.VideoService;
 import com.myytcollection.util.JwtUtil;
 import org.springframework.data.domain.Page;
@@ -16,19 +15,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 public class VideoController extends Controller {
 
-    private final JwtUtil jwtUtil;
+    private final UserService userService;
     private final VideoService videoService;
-    private final UserRepository userRepository;
 
-    public VideoController(JwtUtil jwtUtil, VideoService videoService, UserRepository userRepository) {
-        this.jwtUtil = jwtUtil;
+    public VideoController(UserService userService, VideoService videoService) {
+        this.userService = userService;
         this.videoService = videoService;
-        this.userRepository = userRepository;
     }
 
     /**
@@ -41,16 +37,16 @@ public class VideoController extends Controller {
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<?> createVideo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody VideoDTO video) {
         try {
-            final String email = getEmail(authorizationHeader, jwtUtil);
-            User user = userRepository.findById(email).get();
+            String jwt = getJWT(authorizationHeader);
+            User user = userService.getUser(jwt);
 
             videoService.createVideo(user, video);
 
             return ResponseEntity.ok().build();
         }
 
-        catch (IllegalArgumentException e) {
-            System.out.println("Error in POST getVideos().");
+        catch (Exception e) {
+            System.out.println("Error in POST getVideos()");
             System.out.println("Auth header: " + authorizationHeader);
             System.out.println("VideoDTO: " + video);
             System.out.println("Error:");
@@ -69,8 +65,8 @@ public class VideoController extends Controller {
     @RequestMapping(path = "/videos", method = RequestMethod.POST)
     public ResponseEntity<?> getVideos(@RequestHeader("Authorization") String authorizationHeader, @RequestBody SearchFilterDTO searchFilter) {
         try {
-            final String email = getEmail(authorizationHeader, jwtUtil);
-            User user = userRepository.findById(email).get();
+            String jwt = getJWT(authorizationHeader);
+            User user = userService.getUser(jwt);
 
             Page<VideoDTO> page = videoService.getVideos(user, searchFilter);
             List<VideoDTO> videos = page.getContent();
@@ -81,7 +77,7 @@ public class VideoController extends Controller {
             return ResponseEntity.ok(response);
         }
 
-        catch (IllegalArgumentException e) {
+        catch (Exception e) {
             System.out.println("Error in VideoController POST getVideos().");
             System.out.println("Auth header: " + authorizationHeader);
             System.out.println("Search filter DTO: " + searchFilter);

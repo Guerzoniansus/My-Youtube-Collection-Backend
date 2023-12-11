@@ -5,23 +5,23 @@ import com.myytcollection.model.Tag;
 import com.myytcollection.model.User;
 import com.myytcollection.repository.UserRepository;
 import com.myytcollection.service.TagService;
+import com.myytcollection.service.UserService;
 import com.myytcollection.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.Set;
 
 @RestController
 public class TagController extends Controller {
 
-    private final JwtUtil jwtUtil;
+    private final UserService userService;
     private final TagService tagService;
-    private final UserRepository userRepository;
 
-    public TagController(JwtUtil jwtUtil, TagService tagService, UserRepository userRepository) {
-        this.jwtUtil = jwtUtil;
+    public TagController(UserService userService, TagService tagService) {
+        this.userService = userService;
         this.tagService = tagService;
-        this.userRepository = userRepository;
     }
 
     /**
@@ -33,21 +33,22 @@ public class TagController extends Controller {
     @RequestMapping(path = "/tags", method = RequestMethod.POST)
     public ResponseEntity<?> createTags(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Set<TagDTO> tags) {
         try {
-            String email = getEmail(authorizationHeader, jwtUtil);
-            User user = userRepository.findById(email).get();
-
-            System.out.println("dtos: ");
-            System.out.println(tags);
+            String email = getJWT(authorizationHeader);
+            User user = userService.getUser(email);
 
             Set<Tag> createdTags = tagService.createTags(user, tags);
-            System.out.println("created tags: ");
-            System.out.println(createdTags);
 
             return ResponseEntity.ok(createdTags);
         }
 
-        catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Something was wrong with the authorization");
+        catch (Exception e) {
+            System.out.println("Error in TagController POST createTags()");
+            System.out.println("Auth header: " + authorizationHeader);
+            System.out.println("Tag DTOs: " + tags);
+            System.out.println("Error:");
+            System.out.println(e.getMessage());
+            System.out.println(Arrays.toString(e.getStackTrace()));
+            return ResponseEntity.badRequest().body("Something went wrong");
         }
     }
 
@@ -59,16 +60,21 @@ public class TagController extends Controller {
     @RequestMapping(path = "/tags", method = RequestMethod.GET)
     public ResponseEntity<?> getTags(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            final String email = getEmail(authorizationHeader, jwtUtil);
-            User user = userRepository.findById(email).get();
+            String email = getJWT(authorizationHeader);
+            User user = userService.getUser(email);
 
             Set<TagDTO> tags = tagService.getAllTagsAsDTOs(user);
 
             return ResponseEntity.ok(tags);
         }
 
-        catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Something was wrong with the authorization");
+        catch (Exception e) {
+            System.out.println("Error in TagController GET getTags()");
+            System.out.println("Auth header: " + authorizationHeader);
+            System.out.println("Error:");
+            System.out.println(e.getMessage());
+            System.out.println(Arrays.toString(e.getStackTrace()));
+            return ResponseEntity.badRequest().body("Something went wrong");
         }
     }
 
