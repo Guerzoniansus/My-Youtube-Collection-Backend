@@ -5,25 +5,25 @@ import java.util.Set;
 public class SearchFilterDTO {
     private String query;
     private Set<TagDTO> tags;
-    private int pageNumber;
+    private int page;
     private int pageSize;
 
-    public SearchFilterDTO(String query, Set<TagDTO> tags, int pageNumber, int pageSize) {
+    public SearchFilterDTO(String query, Set<TagDTO> tags, int page, int pageSize) {
         this.query = query;
         this.tags = tags;
-        this.pageNumber = pageNumber;
+        this.page = page;
         this.pageSize = pageSize;
     }
 
     public SearchFilterDTO() {
     }
 
-    public int getPageNumber() {
-        return pageNumber;
+    public int getPage() {
+        return page;
     }
 
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
+    public void setPage(int page) {
+        this.page = page;
     }
 
     public int getPageSize() {
@@ -55,7 +55,7 @@ public class SearchFilterDTO {
         return "SearchFilterDTO{" +
                 "query='" + query + '\'' +
                 ", tags=" + tags +
-                ", pageNumber=" + pageNumber +
+                ", page=" + page +
                 ", pageSize=" + pageSize +
                 '}';
     }

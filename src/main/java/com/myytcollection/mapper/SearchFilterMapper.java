@@ -3,7 +3,6 @@ package com.myytcollection.mapper;
 import com.myytcollection.dto.SearchFilterDTO;
 import com.myytcollection.model.SearchFilter;
 import com.myytcollection.model.Tag;
-import com.myytcollection.repository.TagRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -27,6 +26,6 @@ public class SearchFilterMapper {
         Set<Tag> tags = searchFilterDTO.getTags() == null
                 ? new HashSet<>()
                 : searchFilterDTO.getTags().stream().map(tagMapper::fromDatabase).collect(Collectors.toSet());
-        return new SearchFilter(searchFilterDTO.getQuery(), tags, searchFilterDTO.getPageNumber(), searchFilterDTO.getPageSize());
+        return new SearchFilter(searchFilterDTO.getQuery(), tags, searchFilterDTO.getPage(), searchFilterDTO.getPageSize());
     }
 }

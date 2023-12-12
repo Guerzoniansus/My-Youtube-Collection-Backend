@@ -39,7 +39,7 @@ public class SearchFilterMapperTest {
         SearchFilter result = searchFilterMapper.toModel(searchFilterDTO);
 
         assertEquals("query", result.getQuery());
-        assertEquals(1, result.getPageNumber());
+        assertEquals(1, result.getPage());
         assertEquals(10, result.getPageSize());
         assertEquals(Set.of(mockTag), result.getTags());
     }
@@ -50,7 +50,7 @@ public class SearchFilterMapperTest {
         SearchFilter result = searchFilterMapper.toModel(searchFilterDTO);
 
         assertEquals("query", result.getQuery());
-        assertEquals(1, result.getPageNumber());
+        assertEquals(1, result.getPage());
         assertEquals(10, result.getPageSize());
         assert(result.getTags()).isEmpty();
     }
@@ -61,7 +61,7 @@ public class SearchFilterMapperTest {
         SearchFilter result = searchFilterMapper.toModel(searchFilterDTO);
 
         assertEquals("query", result.getQuery());
-        assertEquals(1, result.getPageNumber());
+        assertEquals(1, result.getPage());
         assertEquals(10, result.getPageSize());
         Collections Collections;
         assert(result.getTags()).isEmpty();

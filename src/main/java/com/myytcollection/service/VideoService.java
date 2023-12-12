@@ -92,7 +92,7 @@ public class VideoService {
             }
         }
 
-        Pageable pageable = PageRequest.of(searchFilter.getPageNumber(), searchFilter.getPageSize());
+        Pageable pageable = PageRequest.of(searchFilter.getPage(), searchFilter.getPageSize());
         Page<Video> videos = videoRepository.getVideos(user, searchFilter.getQuery(), tagIds, pageable);
         return videos;
     }

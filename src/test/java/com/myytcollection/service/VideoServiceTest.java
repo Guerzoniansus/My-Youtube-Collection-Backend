@@ -20,9 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -83,7 +81,7 @@ public class VideoServiceTest {
 
         SearchFilterDTO searchFilterDTO = new SearchFilterDTO("query", null, 0, 10);
         SearchFilter searchFilter = searchFilterMapper.toModel(searchFilterDTO);
-        Pageable pageable = PageRequest.of(searchFilter.getPageNumber(), searchFilter.getPageSize());
+        Pageable pageable = PageRequest.of(searchFilter.getPage(), searchFilter.getPageSize());
 
         when(videoRepository.getVideos(user, searchFilter.getQuery(), null, pageable)).thenReturn(new PageImpl<>(videos.stream().toList()));
 

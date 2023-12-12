@@ -1,31 +1,29 @@
 package com.myytcollection.model;
 
-import com.myytcollection.dto.TagDTO;
-
 import java.util.Set;
 
 public class SearchFilter {
     private String query;
     private Set<Tag> tags;
-    private int pageNumber;
+    private int page;
     private int pageSize;
 
-    public SearchFilter(String query, Set<Tag> tags, int pageNumber, int pageSize) {
+    public SearchFilter(String query, Set<Tag> tags, int page, int pageSize) {
         this.query = query;
         this.tags = tags;
-        this.pageNumber = pageNumber;
+        this.page = page;
         this.pageSize = pageSize;
     }
 
     public SearchFilter() {
     }
 
-    public int getPageNumber() {
-        return pageNumber;
+    public int getPage() {
+        return page;
     }
 
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
+    public void setPage(int page) {
+        this.page = page;
     }
 
     public int getPageSize() {
@@ -57,7 +55,7 @@ public class SearchFilter {
         return "SearchFilter{" +
                 "query='" + query + '\'' +
                 ", tags=" + tags +
-                ", pageNumber=" + pageNumber +
+                ", page=" + page +
                 ", pageSize=" + pageSize +
                 '}';
     }
