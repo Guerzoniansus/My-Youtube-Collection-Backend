@@ -4,30 +4,31 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import com.myytcollection.repository.UserRepository;
-import com.myytcollection.service.LoginService;
+import com.myytcollection.service.UserService;
 import com.myytcollection.util.JwtUtil;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+@RunWith(MockitoJUnitRunner.class)
 public class LoginControllerTest {
 
+    @InjectMocks
     private LoginController loginController;
-    private LoginService loginService;
 
-    @Before
-    public void setUp() {
-        loginService = mock(LoginService.class);
-        JwtUtil jwtUtil = mock(JwtUtil.class);
-        UserRepository userRepository = mock(UserRepository.class);
-        loginController = new LoginController(loginService, jwtUtil, "yourClientId", userRepository);
-    }
+    @Mock
+    private UserService userService;
+
 
     @Test
-    public void testLoginWhenLoginServiceReturnsNull() {
+    public void testLogin_WhenUserServiceReturnsNull() {
         String idToken = "googleIdToken";
-        when(loginService.login(eq(idToken), any(), any(), any())).thenReturn(null);
+        when(userService.login(eq(idToken))).thenReturn(null);
 
         ResponseEntity<String> responseEntity = loginController.login(idToken);
 
@@ -36,9 +37,9 @@ public class LoginControllerTest {
     }
 
     @Test
-    public void testLoginWhenLoginServiceReturnsNonNull() {
+    public void testLogin_WhenUserServiceReturnsNonNull() {
         String idToken = "googleIdToken";
-        when(loginService.login(eq(idToken), any(), any(), any())).thenReturn("jwt");
+        when(userService.login(eq(idToken))).thenReturn("jwt");
 
         ResponseEntity<String> responseEntity = loginController.login(idToken);
 

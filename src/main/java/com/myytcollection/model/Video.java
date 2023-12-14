@@ -12,7 +12,11 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table
+@Table(indexes = {
+        @Index(name = "index_title", columnList = "title"),
+        @Index(name = "index_alternativeTitle", columnList = "alternativeTitle"),
+        @Index(name = "index_channel", columnList = "channel"),
+})
 public class Video {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
