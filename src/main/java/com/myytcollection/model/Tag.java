@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ import java.util.Set;
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames={"text", "email"})
 })
-public class Tag {
+public class Tag implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int tagID;

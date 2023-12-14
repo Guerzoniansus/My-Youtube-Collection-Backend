@@ -8,6 +8,7 @@ import com.myytcollection.model.Video;
 import com.myytcollection.repository.VideoRepository;
 import org.springframework.stereotype.Component;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,9 @@ public class VideoMapper {
      * @return The converted video DTO.
      */
     public VideoDTO toDTO(Video video) {
-        Set<TagDTO> tags = video.getTags().stream().map(tagMapper::toDTO).collect(Collectors.toSet());
+        Set<TagDTO> tags = video.getTags() == null
+                ? new HashSet<>()
+                : video.getTags().stream().map(tagMapper::toDTO).collect(Collectors.toSet());
 
         return new VideoDTO(video.getVideoID(), video.getVideoCode(),
                 video.getTitle(), video.getChannel(), video.getAlternativeTitle(), tags);

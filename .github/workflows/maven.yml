@@ -10,9 +10,9 @@ name: Java CI with Maven
 
 on: push
 jobs:
-    test:
-      runs-on: ubuntu-latest
-      steps:
+  test:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -22,11 +22,11 @@ jobs:
           cache: maven
       - name: Run tests
         run: mvn test
-    build-prod:
-      if: github.ref == 'refs/heads/main'
-      needs: test
-      runs-on: ubuntu-latest
-      steps:
+  build-prod:
+    if: github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -39,13 +39,13 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-         name: my-yt-collection-backend
-         path: ./target/*.jar
-    build-dev:
-      if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release/')
-      needs: test
-      runs-on: ubuntu-latest
-      steps:
+          name: my-yt-collection-backend
+          path: ./target/*.jar
+  build-dev:
+    if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release/')
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -58,5 +58,5 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-         name: my-yt-collection-backend
-         path: ./target/*.jar
+          name: my-yt-collection-backend
+          path: ./target/*.jar

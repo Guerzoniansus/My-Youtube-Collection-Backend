@@ -1,13 +1,21 @@
 package com.myytcollection.service;
 
+import com.myytcollection.dto.SearchFilterDTO;
 import com.myytcollection.dto.VideoDTO;
+import com.myytcollection.mapper.SearchFilterMapper;
 import com.myytcollection.mapper.VideoMapper;
+import com.myytcollection.model.SearchFilter;
 import com.myytcollection.model.User;
 import com.myytcollection.model.Video;
+import com.myytcollection.model.Tag;
 import com.myytcollection.repository.VideoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,11 +26,13 @@ import java.util.stream.Collectors;
 public class VideoService {
 
     private final VideoRepository videoRepository;
-    private final VideoMapper mapper;
+    private final VideoMapper videoMapper;
+    private final SearchFilterMapper searchFilterMapper;
 
-    public VideoService(VideoRepository videoRepository, VideoMapper videoMapper) {
+    public VideoService(VideoRepository videoRepository, VideoMapper videoMapper, SearchFilterMapper searchFilterMapper) {
         this.videoRepository = videoRepository;
-        this.mapper = videoMapper;
+        this.videoMapper = videoMapper;
+        this.searchFilterMapper = searchFilterMapper;
     }
 
     /**
@@ -31,12 +41,8 @@ public class VideoService {
      * @param videoDTO The video to save.
      */
     public void createVideo(User user, VideoDTO videoDTO) {
-        Video video = mapper.toModel(videoDTO, user);
+        Video video = videoMapper.toModel(videoDTO, user);
         saveVideo(video);
-    }
-
-    public Set<Video> getVideos(User user) {
-        return videoRepository.findByUserOrderByDateCreatedDesc(user);
     }
 
     /**
@@ -48,21 +54,46 @@ public class VideoService {
     }
 
     /**
-     * Returns all videos of a user, or an empty list if the user has no videos.
-     * @param user The user whose videos to get.
-     * @return All videos of a user, or an empty list if the user has no videos, converted to VideoDTOs.
+     * Gets videos from the user.
+     * @param user The user to get videos from.
+     * @param searchFilterDTO An object containing the search parameters.
+     * @return A Page object that contains the videos (use page.getContent() and the total amount of videos.
      */
-    public Set<VideoDTO> getAllVideosAsDTOs(User user) {
-        // Using LinkedHashSet to keep the order sorted by date
-        return getAllVideos(user).stream().map(mapper::toDTO).collect(Collectors.toCollection(LinkedHashSet::new));
+    public Page<VideoDTO> getVideos(User user, SearchFilterDTO searchFilterDTO) {
+        if (searchFilterDTO == null) {
+            throw new IllegalArgumentException("The search filter cannot be null");
+        }
+
+        SearchFilter searchFilter = searchFilterMapper.toModel(searchFilterDTO);
+        Page<Video> videos = getVideos(user, searchFilter);
+
+        if (videos == null) {
+            return new PageImpl<>(new ArrayList<>());
+        }
+
+        else {
+            Page<VideoDTO> videoDTOs = videos.map(videoMapper::toDTO);
+            return videoDTOs;
+        }
     }
 
     /**
-     * Returns all videos of a user, or an empty list if the user has no videos.
-     * @param user The user whose videos to get.
-     * @return All videos of a user, or an empty list if the user has no videos.
+     * Gets videos from the user.
+     * @param user The user to get videos from.
+     * @param searchFilter An object containing the search parameters.
+     * @return A Page object that contains the videos (use page.getContent() and the total amount of videos.
      */
-    public Set<Video> getAllVideos(User user) {
-        return videoRepository.findByUserOrderByDateCreatedDesc(user);
+    private Page<Video> getVideos(User user, SearchFilter searchFilter) {
+        Set<Integer> tagIds = null; // Database query cannot use raw tags
+
+        if(searchFilter.getTags() != null) {
+            if (searchFilter.getTags().isEmpty() == false) {
+                tagIds = searchFilter.getTags().stream().map(Tag::getTagID).collect(Collectors.toSet());
+            }
+        }
+
+        Pageable pageable = PageRequest.of(searchFilter.getPage(), searchFilter.getPageSize());
+        Page<Video> videos = videoRepository.getVideos(user, searchFilter.getQuery(), tagIds, pageable);
+        return videos;
     }
 }
