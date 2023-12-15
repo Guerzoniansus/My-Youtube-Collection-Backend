@@ -20,6 +20,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -98,4 +100,42 @@ public class VideoServiceTest {
             videoService.getVideos(user, null);
         });
     }
+
+    @Test
+    public void testDeleteVideo_Success() throws IllegalAccessException {
+        User user = new User("test@example.com");
+        Video video = new Video(1, "videoCode", "title", "channel", "alternativeTitle", null, user, new HashSet<>());
+
+        when(videoRepository.findById(1)).thenReturn(Optional.of(video));
+
+        videoService.deleteVideo(user, 1);
+
+        // Verify that delete was called with the correct argument
+        verify(videoRepository).delete(video);
+    }
+
+    @Test
+    public void testDeleteVideo_VideoDoesNotExist_ThrowsException() {
+        User user = new User("test@example.com");
+
+        when(videoRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> {
+            videoService.deleteVideo(user, 1);
+        });
+    }
+
+    @Test
+    public void testDeleteVideo_VideoDoesNotBelongToUser_ThrowsException() {
+        User user = new User("test@example.com");
+        User otherUser = new User("other@example.com");
+        Video video = new Video(1, "videoCode", "title", "channel", "alternativeTitle", null, otherUser, new HashSet<>());
+
+        when(videoRepository.findById(1)).thenReturn(Optional.of(video));
+
+        assertThrows(IllegalAccessException.class, () -> {
+            videoService.deleteVideo(user, 1);
+        });
+    }
+
 }

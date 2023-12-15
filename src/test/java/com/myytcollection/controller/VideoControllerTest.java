@@ -4,23 +4,18 @@ import com.myytcollection.dto.SearchFilterDTO;
 import com.myytcollection.dto.VideoDTO;
 import com.myytcollection.dto.VideoResponseDTO;
 import com.myytcollection.model.User;
-import com.myytcollection.repository.UserRepository;
 import com.myytcollection.service.UserService;
 import com.myytcollection.service.VideoService;
-import com.myytcollection.util.JwtUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -71,4 +66,28 @@ public class VideoControllerTest {
         assertEquals(videoPage.getTotalElements(), responseDTO.getTotalVideos());
     }
 
+    @Test
+    public void testDeleteVideo_ShouldReturnOk() throws Exception {
+        String authorizationHeader = "Bearer jwt";
+        int videoID = 1;
+
+        when(userService.getUser("jwt")).thenReturn(user);
+        doNothing().when(videoService).deleteVideo(user, videoID);
+
+
+        ResponseEntity<?> responseEntity = videoController.deleteVideo(authorizationHeader, videoID);
+        assertEquals(200, responseEntity.getStatusCodeValue());
+    }
+
+    @Test
+    public void testDeleteVideo_VideoServiceThrowsError() throws Exception {
+        String authorizationHeader = "Bearer jwt";
+        int videoID = 1;
+
+        when(userService.getUser("jwt")).thenReturn(user);
+        doThrow(IllegalAccessException.class).when(videoService).deleteVideo(user, videoID);
+
+        ResponseEntity<?> responseEntity = videoController.deleteVideo(authorizationHeader, videoID);
+        assertEquals(400, responseEntity.getStatusCodeValue());
+    }
 }
