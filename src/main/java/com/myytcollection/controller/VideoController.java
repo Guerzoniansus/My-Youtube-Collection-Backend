@@ -104,7 +104,7 @@ public class VideoController extends Controller {
         }
 
         catch (Exception e) {
-            System.out.println("Error in VideoController POST getVideos().");
+            System.out.println("Error in VideoController DELETE deleteVideo().");
             System.out.println("Auth header: " + authorizationHeader);
             System.out.println("Video ID: " + videoID);
             System.out.println("Error:");
@@ -114,4 +114,28 @@ public class VideoController extends Controller {
         }
     }
 
+    @RequestMapping(path = "/videos/{videoID}", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateVideo(@RequestHeader("Authorization") String authorizationHeader,
+                                         @PathVariable int videoID,
+                                         @RequestBody VideoDTO video) {
+        try {
+            String jwt = getJWT(authorizationHeader);
+            User user = userService.getUser(jwt);
+
+            videoService.updateVideo(user, videoID, video);
+
+            return ResponseEntity.ok().build();
+        }
+
+        catch (Exception e) {
+            System.out.println("Error in VideoController PUT updateVideo().");
+            System.out.println("Auth header: " + authorizationHeader);
+            System.out.println("Video ID: " + videoID);
+            System.out.println("Video DTO: " + video);
+            System.out.println("Error:");
+            System.out.println(e.getMessage());
+            System.out.println(Arrays.toString(e.getStackTrace()));
+            return ResponseEntity.badRequest().body("Something went wrong");
+        }
+    }
 }

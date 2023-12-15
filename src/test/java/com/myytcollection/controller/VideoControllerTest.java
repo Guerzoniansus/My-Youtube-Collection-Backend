@@ -34,7 +34,7 @@ public class VideoControllerTest {
     @Test
     public void createVideo_shouldReturnOk() {
         String authorizationHeader = "Bearer jwt";
-        VideoDTO videoDTO = new VideoDTO();  // Add relevant fields to simulate video data
+        VideoDTO videoDTO = new VideoDTO();
 
         when(userService.getUser("jwt")).thenReturn(user);
 
@@ -47,8 +47,8 @@ public class VideoControllerTest {
     @Test
     public void getVideos_shouldReturnOkWithResponse() {
         String authorizationHeader = "Bearer jwt";
-        SearchFilterDTO searchFilter = new SearchFilterDTO();  // Add relevant fields to simulate search filter
-        List<VideoDTO> videoDTOList = new ArrayList<>();  // Add relevant fields to simulate video data
+        SearchFilterDTO searchFilter = new SearchFilterDTO();
+        List<VideoDTO> videoDTOList = new ArrayList<>();
         videoDTOList.add(new VideoDTO(1, "videoCode", "title", "channel", "altTitle", new HashSet<>()));
         Page<VideoDTO> videoPage = mock(Page.class);
 
@@ -88,6 +88,32 @@ public class VideoControllerTest {
         doThrow(IllegalAccessException.class).when(videoService).deleteVideo(user, videoID);
 
         ResponseEntity<?> responseEntity = videoController.deleteVideo(authorizationHeader, videoID);
+        assertEquals(400, responseEntity.getStatusCodeValue());
+    }
+
+    @Test
+    public void testUpdateVideo_ShouldReturnOk() throws Exception {
+        String authorizationHeader = "Bearer jwt";
+        int videoID = 1;
+        VideoDTO video = new VideoDTO();
+
+        when(userService.getUser("jwt")).thenReturn(user);
+        doNothing().when(videoService).updateVideo(user, videoID, video);
+
+        ResponseEntity<?> responseEntity = videoController.updateVideo(authorizationHeader, videoID, video);
+        assertEquals(200, responseEntity.getStatusCodeValue());
+    }
+
+    @Test
+    public void testUpdateVideo_VideoServiceThrowsError() throws Exception {
+        String authorizationHeader = "Bearer jwt";
+        int videoID = 1;
+        VideoDTO video = new VideoDTO();
+
+        when(userService.getUser("jwt")).thenReturn(user);
+        doThrow(IllegalAccessException.class).when(videoService).updateVideo(user, videoID, video);
+
+        ResponseEntity<?> responseEntity = videoController.updateVideo(authorizationHeader, videoID, video);
         assertEquals(400, responseEntity.getStatusCodeValue());
     }
 }
