@@ -26,7 +26,9 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("*");         //'*' allows all endpoints, Provide your URL/endpoint, if any.
         config.addAllowedHeader("*");
-        config.addAllowedMethod("POST");   //add the methods you want to allow like 'GET', 'PUT',etc. using similar statements.
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("DELETE");
+        config.addAllowedMethod("PUT");
         config.addAllowedMethod("GET");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);

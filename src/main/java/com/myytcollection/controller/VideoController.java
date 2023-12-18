@@ -86,4 +86,56 @@ public class VideoController extends Controller {
         }
     }
 
+    /**
+     * Deletes a video from the database.
+     * @param authorizationHeader The authorization header in the HTTP request.
+     * @param videoID The ID of the video to delete.
+     * @return Status 200 (OK) if deletion was succesful, or Status.400 (Bad Request) if something went wrong.
+     */
+    @RequestMapping(path = "/videos/{videoID}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteVideo(@RequestHeader("Authorization") String authorizationHeader, @PathVariable int videoID) {
+        try {
+            String jwt = getJWT(authorizationHeader);
+            User user = userService.getUser(jwt);
+
+            videoService.deleteVideo(user, videoID);
+
+            return ResponseEntity.ok().build();
+        }
+
+        catch (Exception e) {
+            System.out.println("Error in VideoController DELETE deleteVideo().");
+            System.out.println("Auth header: " + authorizationHeader);
+            System.out.println("Video ID: " + videoID);
+            System.out.println("Error:");
+            System.out.println(e.getMessage());
+            System.out.println(Arrays.toString(e.getStackTrace()));
+            return ResponseEntity.badRequest().body("Something went wrong");
+        }
+    }
+
+    @RequestMapping(path = "/videos/{videoID}", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateVideo(@RequestHeader("Authorization") String authorizationHeader,
+                                         @PathVariable int videoID,
+                                         @RequestBody VideoDTO video) {
+        try {
+            String jwt = getJWT(authorizationHeader);
+            User user = userService.getUser(jwt);
+
+            videoService.updateVideo(user, videoID, video);
+
+            return ResponseEntity.ok().build();
+        }
+
+        catch (Exception e) {
+            System.out.println("Error in VideoController PUT updateVideo().");
+            System.out.println("Auth header: " + authorizationHeader);
+            System.out.println("Video ID: " + videoID);
+            System.out.println("Video DTO: " + video);
+            System.out.println("Error:");
+            System.out.println(e.getMessage());
+            System.out.println(Arrays.toString(e.getStackTrace()));
+            return ResponseEntity.badRequest().body("Something went wrong");
+        }
+    }
 }

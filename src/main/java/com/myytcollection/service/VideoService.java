@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -95,5 +96,56 @@ public class VideoService {
         Pageable pageable = PageRequest.of(searchFilter.getPage(), searchFilter.getPageSize());
         Page<Video> videos = videoRepository.getVideos(user, searchFilter.getQuery(), tagIds, pageable);
         return videos;
+    }
+
+    /**
+     * Deletes a video from the database.
+     * @param user The user the video belongs to.
+     * @param videoID The ID of the video to delete.
+     * @throws NoSuchElementException If the video does not exist.
+     * @throws IllegalAccessException If the video does not belong to the given user.
+     */
+    public void deleteVideo(User user, int videoID) throws NoSuchElementException, IllegalAccessException {
+        if (videoRepository.findById(videoID).isEmpty()) {
+            throw new NoSuchElementException("This video does not exist");
+        }
+
+        Video videoToDelete = videoRepository.findById(videoID).get();
+
+        if (videoToDelete.getUser().getEmail().equals(user.getEmail())) {
+            videoRepository.delete(videoToDelete);
+        }
+
+        else {
+            throw new IllegalAccessException("This video does not belong to user " + user.getEmail());
+        }
+    }
+
+    /**
+     * Updates a video in the database.
+     * @param user The user the video belongs to.
+     * @param videoID The ID of the video to delete.
+     * @param updatedVideo A video containing the new info that should be stored.
+     * @throws NoSuchElementException If the video does not exist.
+     * @throws IllegalAccessException If the video does not belong to the given user.
+     */
+    public void updateVideo(User user, int videoID, VideoDTO updatedVideo) throws NoSuchElementException, IllegalAccessException {
+        if (videoRepository.findById(videoID).isEmpty()) {
+            throw new NoSuchElementException("This video does not exist");
+        }
+
+        Video oldVideo = videoRepository.findById(videoID).get();
+        Video newVideo = videoMapper.toModel(updatedVideo, user);
+
+        if (oldVideo.getUser().getEmail().equals(user.getEmail())) {
+            oldVideo.setAlternativeTitle(newVideo.getAlternativeTitle());
+            oldVideo.setTags(newVideo.getTags());
+
+            videoRepository.save(oldVideo);
+        }
+
+        else {
+            throw new IllegalAccessException("This video does not belong to user " + user.getEmail());
+        }
     }
 }
