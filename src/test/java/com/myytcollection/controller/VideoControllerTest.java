@@ -30,6 +30,7 @@ public class VideoControllerTest {
     private VideoService videoService;
 
     private final User user = new User("test@example.com");
+    // Dit is een comment
 
     @Test
     public void createVideo_shouldReturnOk() {
